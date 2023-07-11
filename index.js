@@ -2,7 +2,9 @@ import express from 'express'
 import bodyParser from 'body-parser'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import { ensureAuthenticated } from './src/middelware/auth.js'
 import authRouter from './src/router/auth.js'
+import carsRouter from './src/router/cars.js'
 import connectToDb from './src/services/db.js'
 
 dotenv.config()
@@ -20,7 +22,9 @@ const startApp = async () => {
     })
   )
 
+  app.use(ensureAuthenticated)
   app.use('/auth', authRouter)
+  app.use('/cars', carsRouter)
 
   try {
     await connectToDb()
