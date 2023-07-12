@@ -11,7 +11,7 @@ export const getUsers = async () => {
 /**
  *
  * @param {string} id
- * @returns {{email: string, password: string, name: string, salt: string, carsFavs: [string]}}
+ * @returns {{}} User
  */
 
 export const getUserById = async (id) => {
@@ -29,7 +29,12 @@ export const getUserById = async (id) => {
  * @param {object} data
  * @param {string} data.email
  * @param {string} data.password
- * @param {string} data.name
+ * @param {string} data.firstName
+ * @param {string} data.lastName
+ * @param {string} data.dateOfBirth
+ * @param {number} data.phone
+ * @param {string} data.dni
+ * @param {string} data.rol
  * @param {string} data.salt
  * @param {[string]} data.carsFavs
  */

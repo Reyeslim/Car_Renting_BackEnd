@@ -15,7 +15,27 @@ const UserSchema = new mongoose.Schema(
       require: true,
     },
 
-    name: {
+    firstName: {
+      type: String,
+    },
+
+    lastName: {
+      type: String,
+    },
+
+    dateOfBirth: {
+      type: String,
+    },
+
+    phone: {
+      type: Number,
+    },
+
+    dni: {
+      type: String,
+    },
+
+    rol: {
       type: String,
     },
 

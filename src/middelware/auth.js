@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken'
 import User from '../models/user.js'
 
 const publicUrls = ['/auth/login', '/auth/signup']
+const adminUrls = ['/admin/users']
 
 export const ensureAuthenticated = async (request, response, next) => {
   if (!publicUrls.includes(request.originalUrl)) {
@@ -26,6 +27,9 @@ export const ensureAuthenticated = async (request, response, next) => {
       return response.status(403).send({ message: 'Wrong token' })
     }
 
+    if (user.rol !== 'admin' && adminUrls.includes(request.originalUrl)) {
+      return response.status(404).send({ message: 'Not found' })
+    }
     request.user = user
   }
 
