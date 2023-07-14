@@ -1,11 +1,5 @@
 import express from 'express'
-import {
-  getUsers,
-  getUserById,
-  createUser,
-  updateUser,
-  removeUserById,
-} from '../controllers/user.js'
+import { getUsers, getUserById, removeUserById } from '../controllers/user.js'
 
 const router = express.Router()
 
@@ -30,24 +24,6 @@ router.get('/users/:id', async (request, response) => {
   }
 })
 
-router.post('/users', async (request, response) => {
-  try {
-    const createdUser = await createUser(request.body)
-    response.json({ user: createdUser })
-  } catch (error) {
-    response.status(500).json(error.message)
-  }
-})
-
-router.put('/users/:id', async (request, response) => {
-  try {
-    const updatedUser = await updateUser(request.params.id, request.body)
-    response.json({ user: updatedUser })
-  } catch (error) {
-    response.status(500).json(error.message)
-  }
-})
-
 router.delete('/users/:id', async (request, response) => {
   try {
     await removeUserById(request.params.id)
@@ -56,5 +32,23 @@ router.delete('/users/:id', async (request, response) => {
     response.status(500).json(error.message)
   }
 })
+
+// router.post('/users', async (request, response) => {
+//   try {
+//     const createdUser = await createUser(request.body)
+//     response.json({ user: createdUser })
+//   } catch (error) {
+//     response.status(500).json(error.message)
+//   }
+// })
+
+// router.put('/users/:id', async (request, response) => {
+//   try {
+//     const updatedUser = await updateUser(request.params.id, request.body)
+//     response.json({ user: updatedUser })
+//   } catch (error) {
+//     response.status(500).json(error.message)
+//   }
+// })
 
 export default router

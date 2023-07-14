@@ -37,17 +37,13 @@ const UserSchema = new mongoose.Schema(
 
     rol: {
       type: String,
+      enum: ['admin', 'seller', 'customer'],
     },
 
     salt: {
       type: String,
       require: true,
     },
-    carsFavs: [
-      {
-        type: String,
-      },
-    ],
   },
   { collection: 'users' }
 )
