@@ -28,7 +28,7 @@ export const ensureAuthenticated = async (request, response, next) => {
     }
 
     if (user.rol !== 'admin' && adminUrls.includes(request.originalUrl)) {
-      return response.status(404).send({ message: 'Not found' })
+      return response.status(404).send({ message: 'Page not found' })
     }
     request.user = user
   }

@@ -1,7 +1,7 @@
 import User from '../models/user.js'
 
 /**
- * @returns {[]} User
+ * @returns {Promise<object>}
  */
 
 export const getUsers = async () => {
@@ -15,7 +15,7 @@ export const getUsers = async () => {
 /**
  *
  * @param {string} id
- * @returns {{}} User
+ * @returns {Promise<object>}
  */
 
 export const getUserById = async (id) => {
@@ -31,7 +31,7 @@ export const getUserById = async (id) => {
 /**
  *
  * @param {string} id
- * @returns {boolean}
+ * @returns {Promise<boolean>}
  */
 export const removeUserById = async (id) => {
   await User.deleteOne({ _id: id })

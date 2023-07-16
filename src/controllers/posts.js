@@ -11,7 +11,7 @@ export const getPosts = async () => {
 /**
  *
  * @param {string} id
- * @returns Post
+ * @returns {Promise<object>}
  */
 
 export const getPostById = async (id) => {
@@ -27,17 +27,17 @@ export const getPostById = async (id) => {
 /**
  *
  * @param {object} data
- * @param {'car' | 'motorbike' | 'van'} data.vehicle
  * @param {string} data.brand
  * @param {string} data.name
  * @param {string} data.model
  * @param {number} data.plateNumber
  * @param {number} data.km
  * @param {number} data.carSeats
- * @param {'electric' | 'gas'} data.fuel
- * @param {'manual' | 'automatic'} data.gearBox
  * @param {number} data.doors
  * @param {string} data.sellerId
+ * @param {'electric' | 'gas'} data.fuel
+ * @param {'manual' | 'automatic'} data.gearBox
+ * @param {'car' | 'motorbike' | 'van'} data.vehicle
  */
 export const createPost = async ({
   vehicle,
@@ -64,9 +64,9 @@ export const createPost = async ({
     throw new Error('Missing some fields')
   }
 
-  const validPostType = ['car', 'van', 'motorbike']
-  if (!validPostType.includes(vehicle)) {
-    throw new Error(`The type of vehicle must be ${validPostType}`)
+  const validPostVehicle = ['car', 'van', 'motorbike']
+  if (!validPostVehicle.includes(vehicle)) {
+    throw new Error(`The type of vehicle must be ${validPostVehicle}`)
   }
 
   const validFuel = ['gas', 'electric']
@@ -84,10 +84,11 @@ export const createPost = async ({
     throw new Error('The number of doors is not valid')
   }
 
-  // const existingPost = Post.findOne()
-  // if (existingPost) {
-  //   throw new Error('This post already exists')
-  // }
+  const existingPost = await Post.findOne({ name })
+  if (existingPost) {
+    console.log(existingPost)
+    throw new Error('This post already exists')
+  }
 
   const post = new Post({
     vehicle,
@@ -109,21 +110,21 @@ export const createPost = async ({
 /**
  *
  * @param {string} id
+ * @param {object} user
+ * @param {'admin' | 'seller' | 'customer'} user.rol
+ * @param {string} user._id
  * @param {object} data
- * @param {'car' | 'motorbike' | 'van'} data.vehicle
  * @param {string} data.name
  * @param {string} data.brand
  * @param {string} data.model
  * @param {number} data.plateNumber
  * @param {number} data.km
  * @param {number} data.carSeats
- * @param {'electric' | 'gas'} data.fuel
- * @param {'manual' | 'automatic'} data.gearBox
  * @param {number} data.doors
  * @param {string} data.sellerId
- * @param {object} user
- * @param {'admin' | 'seller' | 'customer'} user.rol
- * @param {string} user._id
+ * @param {'electric' | 'gas'} data.fuel
+ * @param {'manual' | 'automatic'} data.gearBox
+ * @param {'car' | 'motorbike' | 'van'} data.vehicle
  */
 
 export const updatePost = async (
@@ -160,9 +161,9 @@ export const updatePost = async (
     throw new Error('Missing some fields')
   }
 
-  const validPostType = ['car', 'van', 'motorbike']
-  if (!validPostType.includes(vehicle)) {
-    throw new Error(`The type of vehicle must be ${validPostType}`)
+  const validPostVehicle = ['car', 'van', 'motorbike']
+  if (!validPostVehicle.includes(vehicle)) {
+    throw new Error(`The type of vehicle must be ${validPostVehicle}`)
   }
 
   const validFuel = ['gas', 'electric']
@@ -204,16 +205,16 @@ export const updatePost = async (
  * @param {string} id
  * @param {string} sellerId
  * @param {object} user
- * @param {string} user.rol
  * @param {string} user._id
- * @returns {boolean}
+ * @param {'admin' | 'seller' | 'customer'} user.rol
+ * @returns {Promise<boolean>}
  */
-export const removePostById = async (id) => {
-  // const post = await getPostById(id)
+export const removePostById = async (id, user) => {
+  const post = await getPostById(id)
 
-  // if (post.sellerId !== user._id && user.rol !== 'admin') {
-  //   throw new Error('This post can only be deleted by its author or the admin')
-  // }
+  if (post.sellerId !== user?._id && user?.rol !== 'admin') {
+    throw new Error('This post can only be deleted by its author or the admin')
+  }
 
   await Post.deleteOne({ _id: id })
 

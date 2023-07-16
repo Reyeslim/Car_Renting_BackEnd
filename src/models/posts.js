@@ -10,7 +10,6 @@ const PostSchema = new mongoose.Schema(
     name: {
       type: String,
       require: true,
-      unique: true,
     },
     brand: {
       type: String,

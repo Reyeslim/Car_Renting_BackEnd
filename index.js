@@ -26,7 +26,7 @@ const startApp = async () => {
   app.use(ensureAuthenticated)
   app.use('/auth', authRouter)
   app.use('/posts', postsRouter)
-  app.use('/admin/', usersRouter)
+  app.use('/admin', usersRouter)
 
   try {
     await connectToDb()

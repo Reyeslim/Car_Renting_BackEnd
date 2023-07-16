@@ -5,8 +5,8 @@ const router = express.Router()
 
 router.get('/users', async (request, response) => {
   try {
-    const posts = await getUsers()
-    response.json({ posts })
+    const users = await getUsers()
+    response.json({ users })
   } catch (error) {
     response.status(500).json(error.message)
   }

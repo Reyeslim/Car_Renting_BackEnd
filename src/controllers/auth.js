@@ -100,6 +100,7 @@ export const signup = async ({
     dni,
     rol,
   })
+
   await user.save()
 
   return jwt.sign({ email, id: user._id }, process.env.TOKEN_SECRET)
