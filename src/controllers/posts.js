@@ -1,4 +1,5 @@
 import Post from '../models/posts.js'
+import UserPostComment from '../models/user_post_comment.js'
 
 /**
  * @returns {Promise<object>}
@@ -21,7 +22,11 @@ export const getPostById = async (id) => {
     throw new Error('Post not found')
   }
 
-  return post
+  const postComments = await UserPostComment.find({
+    postId: post._id,
+  })
+
+  return { ...post.toObject(), comment: postComments }
 }
 
 /**
@@ -59,7 +64,8 @@ export const createPost = async ({
     !plateNumber ||
     !carSeats ||
     !km ||
-    !name
+    !name ||
+    !sellerId
   ) {
     throw new Error('Missing some fields')
   }
@@ -84,9 +90,8 @@ export const createPost = async ({
     throw new Error('The number of doors is not valid')
   }
 
-  const existingPost = await Post.findOne({ name })
+  const existingPost = await Post.findOne({ name, vehicle, sellerId })
   if (existingPost) {
-    console.log(existingPost)
     throw new Error('This post already exists')
   }
 
@@ -145,59 +150,81 @@ export const updatePost = async (
   user
 ) => {
   const post = await getPostById(id)
-  if (post.sellerId !== user._id && user.rol !== 'admin') {
+
+  if (
+    post.sellerId.toString() !== user._id.toString() &&
+    user.rol !== 'admin'
+  ) {
     throw new Error('This post can only be edited by its author')
   }
 
-  if (
-    !vehicle ||
-    !brand ||
-    !model ||
-    !plateNumber ||
-    !carSeats ||
-    !km ||
-    !name
-  ) {
-    throw new Error('Missing some fields')
+  if (name) {
+    post.name = name
+  }
+
+  if (brand) {
+    post.brand = brand
+  }
+
+  if (model) {
+    post.model = model
+  }
+
+  if (plateNumber) {
+    post.plateNumber = plateNumber
+  }
+
+  if (km) {
+    post.km = km
+  }
+
+  if (carSeats) {
+    post.carSeats = carSeats
   }
 
   const validPostVehicle = ['car', 'van', 'motorbike']
-  if (!validPostVehicle.includes(vehicle)) {
-    throw new Error(`The type of vehicle must be ${validPostVehicle}`)
+
+  if (vehicle) {
+    if (!validPostVehicle.includes(vehicle)) {
+      throw new Error(`The type of vehicle must be ${validPostVehicle}`)
+    }
+  } else {
+    infoToUpdate.vehicle = vehicle
   }
 
   const validFuel = ['gas', 'electric']
-  if (fuel && !validFuel.includes(fuel)) {
-    throw new Error('This fuel type is not valid')
+
+  if (fuel) {
+    if (fuel && !validFuel.includes(fuel)) {
+      throw new Error('This fuel type is not valid')
+    }
+  } else {
+    post.fuel = fuel
   }
 
   const validGearBox = ['manual', 'automatic']
-  if (gearBox && !validGearBox.includes(gearBox)) {
-    throw new Error('This gearbox type is invalid')
+
+  if (gearBox) {
+    if (gearBox && !validGearBox.includes(gearBox)) {
+      throw new Error('This gearbox type is invalid')
+    }
+  } else {
+    post.gearBox = gearBox
   }
 
   const validDoors = ['3', '5']
-  if (doors && !validDoors.includes(doors)) {
-    throw new Error('The number of doors is not valid')
-  }
-  await Post.findOneAndUpdate(
-    { _id: id },
-    {
-      vehicle,
-      name,
-      brand,
-      model,
-      plateNumber,
-      km,
-      carSeats,
-      fuel,
-      gearBox,
-      doors,
-      sellerId,
-    }
-  )
 
-  return getPostById(id)
+  if (doors) {
+    if (doors && !validDoors.includes(doors)) {
+      throw new Error('The number of doors is not valid')
+    }
+  } else {
+    post.doors = doors
+  }
+
+  await post.save()
+
+  return post
 }
 
 /**
@@ -212,7 +239,10 @@ export const updatePost = async (
 export const removePostById = async (id, user) => {
   const post = await getPostById(id)
 
-  if (post.sellerId !== user?._id && user?.rol !== 'admin') {
+  if (
+    post.sellerId.toString() !== user._id.toString() &&
+    user.rol !== 'admin'
+  ) {
     throw new Error('This post can only be deleted by its author or the admin')
   }
 

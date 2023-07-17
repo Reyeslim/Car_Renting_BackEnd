@@ -24,7 +24,7 @@ const UserSchema = new mongoose.Schema(
     },
 
     dateOfBirth: {
-      type: String,
+      type: Date,
     },
 
     phone: {
@@ -44,6 +44,13 @@ const UserSchema = new mongoose.Schema(
       type: String,
       require: true,
     },
+
+    favPosts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post',
+      },
+    ],
   },
   { collection: 'users' }
 )

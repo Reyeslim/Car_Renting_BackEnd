@@ -1,6 +1,7 @@
 import User from '../models/user.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
+import { isValid } from 'date-fns'
 
 /**
  * @param {string} email
@@ -35,7 +36,7 @@ export const login = async ({ email, password }) => {
  * @param {string} lastName
  * @param {string} dateOfBirth
  * @param {string} dni
- * @param {'admin' | 'seller' | 'customer'} rol
+ * @param {'seller' | 'customer'} rol
  * @return {Promise<string>}
  */
 
@@ -49,8 +50,14 @@ export const signup = async ({
   dni,
   rol,
 }) => {
-  if (!email || !password) {
+  if (!email || !password || !rol) {
     throw new Error('Some fields are missing')
+  }
+
+  const hasUser = await User.findOne({ email })
+
+  if (hasUser) {
+    throw new Error('Email already in use')
   }
 
   if (phone && typeof phone !== 'number') {
@@ -65,26 +72,19 @@ export const signup = async ({
     throw new Error('Last name must be 3 characters or longer')
   }
 
-  if (dateOfBirth && dateOfBirth.length !== 10) {
-    throw new Error(
-      'Birth date must be 10 characters including / or - between day, month and year'
-    )
+  if (dateOfBirth && !isValid(dateOfBirth)) {
+    throw new Error('Your birthdate is invalid')
   }
 
   if (dni && typeof dni !== 'string') {
     throw new Error('DNI must be composed of numbers and letters')
   }
 
-  const validRoles = ['admin', 'seller', 'customer']
+  const validRoles = ['seller', 'customer']
   if (rol && !validRoles.includes(rol)) {
     throw new Error(`Your role must be one of the following: ${validRoles}`)
   }
 
-  const hasUser = await User.findOne({ email })
-
-  if (hasUser) {
-    throw new Error('Email already in use')
-  }
   const saltRounds = 10
   const salt = await bcrypt.genSalt(saltRounds)
 

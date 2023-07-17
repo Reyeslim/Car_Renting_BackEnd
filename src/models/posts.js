@@ -44,12 +44,14 @@ const PostSchema = new mongoose.Schema(
       enum: ['3', '5'],
     },
     sellerId: {
-      type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      require: true,
     },
   },
   { collection: 'posts' }
 )
 
-const Post = mongoose.model('Posts', PostSchema)
+const Post = mongoose.model('Post', PostSchema)
 
 export default Post

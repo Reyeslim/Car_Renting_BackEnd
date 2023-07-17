@@ -9,7 +9,7 @@ import {
 
 const router = express.Router()
 
-router.get('/', async (request, response) => {
+router.get('/', async (_, response) => {
   try {
     const posts = await getPosts()
     response.json({ posts })
@@ -32,7 +32,10 @@ router.get('/:id', async (request, response) => {
 
 router.post('/', async (request, response) => {
   try {
-    const createdPost = await createPost(request.body)
+    const createdPost = await createPost({
+      ...request.body,
+      sellerId: request.user._id,
+    })
     response.json({ post: createdPost })
   } catch (error) {
     response.status(500).json(error.message)
@@ -54,7 +57,7 @@ router.put('/:id', async (request, response) => {
 
 router.delete('/:id', async (request, response) => {
   try {
-    await removePostById(request.params.id)
+    await removePostById(request.params.id, request.user)
     response.json({ removed: true })
   } catch (error) {
     response.status(500).json(error.message)

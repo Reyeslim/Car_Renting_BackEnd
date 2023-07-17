@@ -1,20 +1,28 @@
 import mongoose from 'mongoose'
 
-const UserCommentsSchema = new mongoose.Schema(
+const UserPostCommentSchema = new mongoose.Schema(
   {
     customerId: {
-      type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
     postId: {
-      type: { type: mongoose.Schema.Types.ObjectId, ref: 'Posts' },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
     },
     comment: {
       type: String,
+      require: true,
+    },
+    createdAt: {
+      type: Date,
+      require: true,
+      default: Date.now,
     },
   },
-  { collection: 'userComments' }
+  { collection: 'userPostComments' }
 )
 
-const Comment = mongoose.model('Comments', UserCommentsSchema)
+const UserPostComment = mongoose.model('UserPostComment', UserPostCommentSchema)
 
-export default Comment
+export default UserPostComment
