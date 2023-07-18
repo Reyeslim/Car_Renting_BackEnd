@@ -77,7 +77,27 @@ export const createPostCommentByUser = async ({ postId, data, user }) => {
   await postComment.save()
 }
 
+/**
+ *
+ * @param {string} commentId
+ * @param {object} user
+ * @param {string} user._id
+ * @param {'admin' | 'seller' | 'customer'} user.rol
+ * @returns {Promise<boolean>}
+ */
+
 export const deletePostCommentByUser = async ({ commentId, user }) => {
+  const comment = await UserPostComment.findOne({ _id: commentId })
+
+  if (
+    comment.customerId.toString() !== user._id.toString() &&
+    user.rol !== 'admin'
+  ) {
+    throw new Error(
+      'This comment can only be deleted by its author or the admin'
+    )
+  }
+
   await UserPostComment.deleteOne({
     _id: commentId,
     customerId: user._id,
