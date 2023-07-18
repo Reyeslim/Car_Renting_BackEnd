@@ -20,7 +20,7 @@ export const getUsers = async (user) => {
  */
 
 export const getUserById = async (id) => {
-  const user = await User.findOne({ _id: id })
+  const user = await User.findOne({ _id: id }).populate('favPosts')
 
   if (!user) {
     throw new Error('User not found')
@@ -40,6 +40,13 @@ export const removeUserById = async (id) => {
   return true
 }
 
+/**
+ *
+ * @param {string} postId
+ * @param {object} user
+ * @param {object[]} user.favPosts
+ */
+
 export const togglePostFavByUser = async (postId, user) => {
   if (!postId) {
     throw new Error('PostId is required')
@@ -47,7 +54,7 @@ export const togglePostFavByUser = async (postId, user) => {
   const post = await getPostById(postId)
   const currentFavs = user.favPosts || []
   const existedFav = currentFavs.find(
-    currentId.toString() === postId.toString()
+    (currentId) => currentId.toString() === postId.toString()
   )
 
   let newFavList = []
@@ -61,6 +68,15 @@ export const togglePostFavByUser = async (postId, user) => {
 
   await User.updateOne({ _id: user._id }, { favPosts: newFavList })
 }
+
+/**
+ *
+ * @param {string} postId
+ * @param {object} data
+ * @param {string} data.comment
+ * @param {object} user
+ * @param {string} user._id
+ */
 
 export const createPostCommentByUser = async ({ postId, data, user }) => {
   if (!data.comment) {
