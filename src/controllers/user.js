@@ -79,7 +79,9 @@ export const createPostCommentByUser = async ({ postId, data, user }) => {
 
 export const deletePostCommentByUser = async ({ commentId, user }) => {
   await UserPostComment.deleteOne({
-    commentId,
+    _id: commentId,
     customerId: user._id,
   })
+
+  return true
 }
