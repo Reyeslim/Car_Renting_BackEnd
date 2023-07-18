@@ -1,20 +1,29 @@
 import mongoose from 'mongoose'
 
-const PostRequestSchema = new mongoose.Schema(
+const UserPostRequestSchema = new mongoose.Schema(
   {
     customerId: {
-      type: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+      require: true,
     },
     postId: {
-      type: { type: mongoose.Schema.Types.ObjectId, ref: 'Posts' },
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Post',
+      require: true,
     },
     status: {
       type: String,
     },
+    createdAt: {
+      type: Date,
+      require: true,
+      default: Date.now,
+    },
   },
-  { collection: 'requests' }
+  { collection: 'userPostRequests' }
 )
 
-const PostRequest = mongoose.model('Requests', PostRequestSchema)
+const UserPostRequest = mongoose.model('Request', UserPostRequestSchema)
 
-export default PostRequest
+export default UserPostRequest

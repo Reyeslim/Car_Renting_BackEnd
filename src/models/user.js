@@ -45,6 +45,12 @@ const UserSchema = new mongoose.Schema(
       require: true,
     },
 
+    createdAt: {
+      type: Date,
+      require: true,
+      default: Date.now,
+    },
+
     favPosts: [
       {
         type: mongoose.Schema.Types.ObjectId,

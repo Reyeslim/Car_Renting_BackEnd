@@ -48,6 +48,11 @@ const PostSchema = new mongoose.Schema(
       ref: 'User',
       require: true,
     },
+    createdAt: {
+      type: Date,
+      require: true,
+      default: Date.now,
+    },
   },
   { collection: 'posts' }
 )
