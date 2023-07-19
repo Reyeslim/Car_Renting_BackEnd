@@ -1,6 +1,7 @@
 import User from '../models/user.js'
 import { getPostById } from './posts.js'
 import UserPostComment from '../models/user_post_comment.js'
+import UserPostValoration from '../models/user_post_valoration.js'
 
 /**
  * @returns {Promise<object>}
@@ -125,4 +126,28 @@ export const deletePostCommentByUser = async ({ commentId, user }) => {
   })
 
   return true
+}
+
+/**
+ *
+ * @param {string} postId
+ * @param {object} data
+ * @param {number} data.rate
+ * @param {object} user
+ * @param {string} user._id
+ */
+
+export const createPostValorationByUser = async ({ postId, data, user }) => {
+  if (!data.rate) {
+    throw new Error('Missing valoration')
+  }
+
+  const post = await getPostById(postId)
+  const postRate = new UserPostValoration({
+    postId,
+    customerId: user._id,
+    rate: data.rate,
+  })
+
+  await postRate.save()
 }

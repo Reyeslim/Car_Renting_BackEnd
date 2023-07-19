@@ -1,5 +1,6 @@
 import Post from '../models/posts.js'
 import UserPostComment from '../models/user_post_comment.js'
+import UserPostValoration from '../models/user_post_valoration.js'
 
 /**
  * @returns {Promise<object>}
@@ -26,7 +27,15 @@ export const getPostById = async (id) => {
     postId: post._id,
   })
 
-  return { ...post.toObject(), comment: postComments }
+  const postValorations = await UserPostValoration.find({
+    postId: post._id,
+  })
+
+  const rating = postValorations.reduce((acc, current) => {
+    return acc + current.rate
+  }, 0)
+
+  return { ...post.toObject(), comments: postComments, rating: rating / 5 }
 }
 
 /**
@@ -145,7 +154,6 @@ export const updatePost = async (
     fuel,
     gearBox,
     doors,
-    sellerId,
   },
   user
 ) => {
