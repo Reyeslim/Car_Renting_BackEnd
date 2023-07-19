@@ -6,6 +6,12 @@ import {
   removePostById,
   updatePost,
 } from '../controllers/posts.js'
+import {
+  createPostCommentByUser,
+  deletePostCommentByUser,
+  togglePostFavByUser,
+  createPostValorationByUser,
+} from '../controllers/user.js'
 
 const router = express.Router()
 
@@ -59,6 +65,55 @@ router.delete('/:id', async (request, response) => {
   try {
     await removePostById(request.params.id, request.user)
     response.json({ removed: true })
+  } catch (error) {
+    response.status(500).json(error.message)
+  }
+})
+
+router.post('/comments/:postId', async (request, response) => {
+  try {
+    await createPostCommentByUser({
+      postId: request.params.postId,
+      data: request.body,
+      user: request.user,
+    })
+    response.json(true)
+  } catch (error) {
+    response.status(500).json(error.message)
+  }
+})
+
+router.delete('/comments/:commentId', async (request, response) => {
+  try {
+    await deletePostCommentByUser({
+      commentId: request.params.commentId,
+      user: request.user,
+    })
+    response.json(true)
+  } catch (error) {
+    console.log(error)
+    response.status(500).json(error.message)
+  }
+})
+
+router.post('/favs/:postId', async (request, response) => {
+  try {
+    await togglePostFavByUser(request.params.postId, request.user)
+    response.json(true)
+  } catch (error) {
+    response.status(500).json(error.message)
+  }
+})
+
+router.post('rate/:postId', async (request, response) => {
+  try {
+    await createPostValorationByUser({
+      postId: request.params.postId,
+      data: request.body,
+      user: request.user,
+    })
+
+    response.json(true)
   } catch (error) {
     response.status(500).json(error.message)
   }

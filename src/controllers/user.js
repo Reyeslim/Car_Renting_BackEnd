@@ -91,7 +91,7 @@ export const createPostCommentByUser = async ({ postId, data, user }) => {
 
   const post = await getPostById(postId)
   const postComment = new UserPostComment({
-    postId,
+    postId: post._id,
     customerId: user._id,
     comment: data.comment,
   })
@@ -110,6 +110,9 @@ export const createPostCommentByUser = async ({ postId, data, user }) => {
 
 export const deletePostCommentByUser = async ({ commentId, user }) => {
   const comment = await UserPostComment.findOne({ _id: commentId })
+  if (!comment) {
+    throw new Error('Comment not found')
+  }
 
   if (
     comment.customerId.toString() !== user._id.toString() &&
@@ -142,9 +145,19 @@ export const createPostValorationByUser = async ({ postId, data, user }) => {
     throw new Error('Missing valoration')
   }
 
+  const formattedRate = Number(data.rate)
+
+  if (isNaN(formattedRate)) {
+    throw new Error('Rate must be a number')
+  }
+
+  if (formattedRate < 0 || formattedRate > 5) {
+    throw new Error('Range must be between 0 and 5')
+  }
+
   const post = await getPostById(postId)
   const postRate = new UserPostValoration({
-    postId,
+    postId: post._id,
     customerId: user._id,
     rate: data.rate,
   })
