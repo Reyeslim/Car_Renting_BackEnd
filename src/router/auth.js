@@ -21,13 +21,4 @@ router.post('/signup', async (request, response) => {
   }
 })
 
-// router.get('/sync', async (request, response) => {
-//   try {
-//     const data = await getApodsFromApi()
-//     response.json(data)
-//   } catch (error) {
-//     response.status(500).json(error.message)
-//   }
-// })
-
 export default router

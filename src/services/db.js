@@ -1,12 +1,12 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose'
 
 export const connectToDb = async () => {
-  console.log("Starting DB connection...");
-  await mongoose.connect("mongodb://localhost:27017/reyesdb", {
+  console.log('Starting DB connection...')
+  await mongoose.connect('mongodb://localhost:27017/reyesdb', {
     useNewUrlParser: true,
     useUnifiedTopology: true,
-  });
-  console.log("Connected to DB reyesdb");
-};
+  })
+  console.log('Connected to DB reyesdb')
+}
 
-export default connectToDb;
+export default connectToDb

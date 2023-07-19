@@ -4,8 +4,9 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import { ensureAuthenticated } from './src/middelware/auth.js'
 import authRouter from './src/router/auth.js'
+import userRouter from './src/router/user.js'
 import postsRouter from './src/router/posts.js'
-import adminRouter from './src/router/user.js'
+import adminRouter from './src/router/admin.js'
 import commentsRouter from './src/router/comments.js'
 import favsRouter from './src/router/favs.js'
 import connectToDb from './src/services/db.js'
@@ -29,6 +30,7 @@ const startApp = async () => {
   app.use('/auth', authRouter)
   app.use('/posts', postsRouter)
   app.use('/admin', adminRouter)
+  app.use('/user', userRouter)
   app.use('/comments', commentsRouter)
   app.use('/toggle', favsRouter)
 
