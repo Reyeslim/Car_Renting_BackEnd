@@ -7,7 +7,6 @@ import authRouter from './src/router/auth.js'
 import userRouter from './src/router/user.js'
 import postsRouter from './src/router/posts.js'
 import adminRouter from './src/router/admin.js'
-import valorationRouter from './src/router/valoration.js'
 import connectToDb from './src/services/db.js'
 
 dotenv.config()
@@ -30,7 +29,6 @@ const startApp = async () => {
   app.use('/posts', postsRouter)
   app.use('/admin', adminRouter)
   app.use('/user', userRouter)
-  app.use('/valoration', valorationRouter)
 
   try {
     await connectToDb()

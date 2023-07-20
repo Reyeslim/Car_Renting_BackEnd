@@ -11,6 +11,7 @@ import {
   deletePostCommentByUser,
   togglePostFavByUser,
   createPostValorationByUser,
+  createPostRequestByUser,
 } from '../controllers/user.js'
 
 const router = express.Router()
@@ -105,7 +106,7 @@ router.post('/favs/:postId', async (request, response) => {
   }
 })
 
-router.post('rate/:postId', async (request, response) => {
+router.post('/rate/:postId', async (request, response) => {
   try {
     await createPostValorationByUser({
       postId: request.params.postId,
@@ -113,6 +114,19 @@ router.post('rate/:postId', async (request, response) => {
       user: request.user,
     })
 
+    response.json(true)
+  } catch (error) {
+    response.status(500).json(error.message)
+  }
+})
+
+router.post('/request/:postId', async (request, response) => {
+  try {
+    await createPostRequestByUser({
+      postId: request.params.postId,
+      data: request.body,
+      user: request.user,
+    })
     response.json(true)
   } catch (error) {
     response.status(500).json(error.message)

@@ -2,6 +2,8 @@ import User from '../models/user.js'
 import { getPostById } from './posts.js'
 import UserPostComment from '../models/user_post_comment.js'
 import UserPostValoration from '../models/user_post_valoration.js'
+import UserPostRequest from '../models/user_post_request.js'
+import { isValid } from 'date-fns'
 
 /**
  * @returns {Promise<object>}
@@ -163,4 +165,60 @@ export const createPostValorationByUser = async ({ postId, data, user }) => {
   })
 
   await postRate.save()
+}
+
+/**
+ *
+ * @param {string} postId
+ * @param {object} data
+ * @param {string} data.status
+ * @param {object[]} data.time
+ * @param {'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'} data.time.weekDay
+ * @param {object[]} data.time.timing
+ * @param {Date} data.time.timing.start
+ * @param {Date} data.time.timing.end
+ */
+
+export const createPostRequestByUser = async ({ postId, data, user }) => {
+  if (
+    !data.status ||
+    !data.time.weekDay ||
+    !data.time.timing.start ||
+    !data.time.timing.end
+  ) {
+    throw new Error('Missing some fields')
+  }
+
+  const validWeekDay = [
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
+  ]
+  if (!validWeekDay.includes(data.time.weekDay)) {
+    throw new Error('The day of the week is invalid')
+  }
+
+  if (!isValid(data.time.timing.start) || !isValid(data.time.timing.end)) {
+    throw new Error('Your start time or end time for this request is invalid')
+  }
+
+  const post = await getPostById(postId)
+  const postRequest = new UserPostRequest({
+    postId: post._id,
+    customerId: user._id,
+    status: data.status,
+    time: {
+      weekDay: data.time.weekDay,
+      timing: {
+        start: data.time.timing.start,
+        end: data.time.timing.end,
+      },
+    },
+  })
+
+  await postRequest.save()
 }
