@@ -247,7 +247,7 @@ export const updatePost = async (
       throw new Error(`The type of vehicle must be ${validPostVehicle}`)
     }
   } else {
-    infoToUpdate.vehicle = vehicle
+    post.vehicle = vehicle
   }
 
   const validFuel = ['gas', 'electric']

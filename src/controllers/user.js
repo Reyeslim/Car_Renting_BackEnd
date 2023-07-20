@@ -222,3 +222,27 @@ export const createPostRequestByUser = async ({ postId, data, user }) => {
 
   await postRequest.save()
 }
+
+export const updateRequestStatusBySeller = async ({
+  postId,
+  data,
+  user,
+  requestId,
+}) => {
+  const post = await getPostById(postId)
+  const postRequest = await UserPostRequest.findOne({ _id: requestId })
+  if (
+    post.sellerId.toString() !== user._id.toString() &&
+    user.rol !== 'admin'
+  ) {
+    throw new Error('You dont have permission to edit this request')
+  }
+
+  if (data.status) {
+    postRequest.status = data.status
+  }
+
+  await post.save()
+
+  return post
+}
