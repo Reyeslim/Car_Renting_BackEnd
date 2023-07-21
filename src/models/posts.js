@@ -1,19 +1,21 @@
 import mongoose from 'mongoose'
 
 export const PostAvailableTimeSchema = new mongoose.Schema({
-  weekDay: {
-    type: String,
-    enum: [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ],
-  },
-  timing: [
+  weekDays: [
+    {
+      type: String,
+      enum: [
+        'Monday',
+        'Tuesday',
+        'Wednesday',
+        'Thursday',
+        'Friday',
+        'Saturday',
+        'Sunday',
+      ],
+    },
+  ],
+  times: [
     {
       start: Date,
       end: Date,
@@ -74,9 +76,8 @@ const PostSchema = new mongoose.Schema(
       require: true,
       default: Date.now,
     },
-    availableTime: {
+    availableTimes: {
       type: [PostAvailableTimeSchema],
-      require: true,
     },
   },
   { collection: 'posts' }

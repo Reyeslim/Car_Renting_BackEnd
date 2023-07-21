@@ -2,7 +2,7 @@ import Post from '../models/posts.js'
 import UserPostComment from '../models/user_post_comment.js'
 import UserPostRequest from '../models/user_post_request.js'
 import UserPostValoration from '../models/user_post_valoration.js'
-import { isValid } from 'date-fns'
+import { validatePostAvailableTimeData } from '../utils/post.js'
 
 /**
  * @returns {Promise<object>}
@@ -63,26 +63,28 @@ export const getPostById = async (id) => {
  * @param {'electric' | 'gas'} data.fuel
  * @param {'manual' | 'automatic'} data.gearBox
  * @param {'car' | 'motorbike' | 'van'} data.vehicle
- * @param {object[]} data.availableTime
- * @param {'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'} data.availableTime.weekDay
- * @param {object[]} data.availableTime.timing
- * @param {Date} data.availableTime.timing.start
- * @param {Date} data.availableTime.timing.end
  */
-export const createPost = async ({
-  vehicle,
-  name,
-  brand,
-  model,
-  plateNumber,
-  km,
-  carSeats,
-  fuel,
-  gearBox,
-  doors,
-  sellerId,
-  availableTime,
-}) => {
+export const createPost = async (
+  {
+    vehicle,
+    name,
+    brand,
+    model,
+    plateNumber,
+    km,
+    carSeats,
+    fuel,
+    gearBox,
+    doors,
+    sellerId,
+    availableTimes,
+  },
+  user
+) => {
+  if (user.rol === 'customer') {
+    throw new Error('You dont have permission for this')
+  }
+
   if (
     !vehicle ||
     !brand ||
@@ -91,9 +93,7 @@ export const createPost = async ({
     !carSeats ||
     !km ||
     !name ||
-    !sellerId ||
-    !availableTime.weekDay ||
-    !availableTime.timing
+    !sellerId
   ) {
     throw new Error('Missing some fields')
   }
@@ -118,24 +118,10 @@ export const createPost = async ({
     throw new Error('The number of doors is not valid')
   }
 
-  const validWeekDay = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ]
-  if (!validWeekDay.includes(availableTime.weekDay)) {
-    throw new Error('The day of the week is invalid')
-  }
-
-  if (
-    !isValid(availableTime.timing.start) ||
-    !isValid(availableTime.timing.end)
-  ) {
-    throw new Error('Your start time or end time for this request is invalid')
+  if (availableTimes) {
+    for (const availableTime of availableTimes) {
+      validatePostAvailableTimeData(availableTime)
+    }
   }
 
   const existingPost = await Post.findOne({ name, vehicle, sellerId })
@@ -155,7 +141,7 @@ export const createPost = async ({
     gearBox,
     doors,
     sellerId,
-    availableTime,
+    availableTimes,
   })
 
   return post.save()
@@ -179,11 +165,6 @@ export const createPost = async ({
  * @param {'electric' | 'gas'} data.fuel
  * @param {'manual' | 'automatic'} data.gearBox
  * @param {'car' | 'motorbike' | 'van'} data.vehicle
- * @param {object[]} data.availableTime
- * @param {'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'} data.availableTime.weekDay
- * @param {object[]} data.availableTime.timing
- * @param {Date} data.availableTime.timing.start
- * @param {Date} data.availableTime.timing.end
  */
 
 export const updatePost = async (
@@ -199,7 +180,6 @@ export const updatePost = async (
     fuel,
     gearBox,
     doors,
-    availableTime,
   },
   user
 ) => {
@@ -234,10 +214,6 @@ export const updatePost = async (
 
   if (carSeats) {
     post.carSeats = carSeats
-  }
-
-  if (availableTime) {
-    post.availableTime = availableTime
   }
 
   const validPostVehicle = ['car', 'van', 'motorbike']

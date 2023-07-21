@@ -40,10 +40,13 @@ router.get('/:id', async (request, response) => {
 
 router.post('/', async (request, response) => {
   try {
-    const createdPost = await createPost({
-      ...request.body,
-      sellerId: request.user._id,
-    })
+    const createdPost = await createPost(
+      {
+        ...request.body,
+        sellerId: request.user._id,
+      },
+      request.user
+    )
     response.json({ post: createdPost })
   } catch (error) {
     response.status(500).json(error.message)
@@ -72,7 +75,7 @@ router.delete('/:id', async (request, response) => {
   }
 })
 
-router.post('/comments/:postId', async (request, response) => {
+router.post('/:postId/comments', async (request, response) => {
   try {
     await createPostCommentByUser({
       postId: request.params.postId,
@@ -98,7 +101,7 @@ router.delete('/comments/:commentId', async (request, response) => {
   }
 })
 
-router.post('/favs/:postId', async (request, response) => {
+router.post('/:postId/favs', async (request, response) => {
   try {
     await togglePostFavByUser(request.params.postId, request.user)
     response.json(true)

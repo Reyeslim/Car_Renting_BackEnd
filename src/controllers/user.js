@@ -87,6 +87,10 @@ export const togglePostFavByUser = async (postId, user) => {
  */
 
 export const createPostCommentByUser = async ({ postId, data, user }) => {
+  if (user.rol === 'seller') {
+    throw new Error('You cant post a comment')
+  }
+
   if (!data.comment) {
     throw new Error('Missing comment')
   }
