@@ -13,12 +13,14 @@ const UserPostRequestSchema = new mongoose.Schema(
       ref: 'Post',
       require: true,
     },
+    //TODO cambiar a enum
     status: {
       type: String,
+      default: 'pending',
       require: true,
     },
     time: {
-      type: [PostAvailableTimeSchema],
+      type: PostAvailableTimeSchema,
     },
     createdAt: {
       type: Date,

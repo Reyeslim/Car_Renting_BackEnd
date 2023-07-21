@@ -3,7 +3,7 @@ import { getPostById } from './posts.js'
 import UserPostComment from '../models/user_post_comment.js'
 import UserPostValoration from '../models/user_post_valoration.js'
 import UserPostRequest from '../models/user_post_request.js'
-import { isValid } from 'date-fns'
+import { validatePostAvailableTimeData } from '../utils/post.js'
 
 /**
  * @returns {Promise<object>}
@@ -184,44 +184,19 @@ export const createPostValorationByUser = async ({ postId, data, user }) => {
  */
 
 export const createPostRequestByUser = async ({ postId, data, user }) => {
-  if (
-    !data.status ||
-    !data.time.weekDay ||
-    !data.time.timing.start ||
-    !data.time.timing.end
-  ) {
+  if (!postId || !data.availableTime) {
     throw new Error('Missing some fields')
   }
 
-  const validWeekDay = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ]
-  if (!validWeekDay.includes(data.time.weekDay)) {
-    throw new Error('The day of the week is invalid')
-  }
-
-  if (!isValid(data.time.timing.start) || !isValid(data.time.timing.end)) {
-    throw new Error('Your start time or end time for this request is invalid')
-  }
+  validatePostAvailableTimeData(data.availableTime)
 
   const post = await getPostById(postId)
+  //TODO validar que el post esta disponible para el tiempo requerido
   const postRequest = new UserPostRequest({
     postId: post._id,
     customerId: user._id,
     status: data.status,
-    time: {
-      weekDay: data.time.weekDay,
-      timing: {
-        start: data.time.timing.start,
-        end: data.time.timing.end,
-      },
-    },
+    time: data.availableTime,
   })
 
   await postRequest.save()
