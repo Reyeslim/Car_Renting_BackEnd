@@ -137,13 +137,12 @@ router.post('/:postId/request', async (request, response) => {
   }
 })
 
-router.put('/request/:postId/:requestId', async (request, response) => {
+router.put('/:postId/request/:requestId', async (request, response) => {
   try {
-    await updateRequestStatusBySeller(
-      request.params.postId,
-      request.body,
-      request.user
-    )
+    await updateRequestStatusBySeller({
+      requestId: request.params.requestId,
+      data: request.body,
+    })
   } catch (error) {
     response.status(500).json(error.message)
   }
