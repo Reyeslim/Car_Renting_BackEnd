@@ -8,8 +8,54 @@ import { validatePostAvailableTimesData } from '../utils/post.js'
  * @returns {Promise<object>}
  */
 
-export const getPosts = async () => {
-  return Post.find()
+export const getPosts = async (filters) => {
+  const filtersData = {}
+  //TODO controlar si el tipo es correcto con los enum
+  if (filters) {
+    const validPostVehicle = ['car', 'van', 'motorbike']
+    if (filters.vehicle) {
+      if (!validPostVehicle.includes(filters.vehicle)) {
+        throw new Error(`The type of vehicle must be ${validPostVehicle}`)
+      }
+      filtersData.vehicle = filters.vehicle
+    }
+
+    if (filters.name) {
+      filtersData.name = { $regex: filters.name }
+    }
+
+    if (filters.brand) {
+      filtersData.brand = filters.brand
+    }
+
+    if (filters.model) {
+      filtersData.model = filters.model
+    }
+
+    if (filters.carSeats) {
+      filtersData.carSeats = filters.carSeats
+    }
+
+    if (filters.fuel) {
+      filtersData.fuel = filters.fuel
+    }
+
+    if (filters.gearBox) {
+      filtersData.gearBox = filters.gearBox
+    }
+
+    if (filters.doors) {
+      filtersData.doors = filters.doors
+    }
+
+    if (filters.time) {
+      filtersData.availableTimes = {
+        $in: filters.time.split(','),
+      }
+    }
+  }
+
+  return Post.find(filtersData)
 }
 
 /**

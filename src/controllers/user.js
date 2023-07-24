@@ -4,6 +4,7 @@ import UserPostComment from '../models/user_post_comment.js'
 import UserPostValoration from '../models/user_post_valoration.js'
 import UserPostRequest from '../models/user_post_request.js'
 import { startOfDay, endOfDay } from 'date-fns'
+import Post from '../models/posts.js'
 
 /**
  * @returns {Promise<object>}
@@ -193,6 +194,10 @@ export const createPostValorationByUser = async ({ postId, data, user }) => {
  */
 
 export const createPostRequestByUser = async ({ postId, data, user }) => {
+  if (user.rol === 'seller') {
+    throw new Error('You cant make a request')
+  }
+
   if (!postId || !data.weekDay) {
     throw new Error('Missing some fields')
   }
@@ -200,7 +205,7 @@ export const createPostRequestByUser = async ({ postId, data, user }) => {
   const post = await getPostById(postId)
 
   if (!post.availableTimes.includes(data.weekDay)) {
-    throw new Error(`This ${data.weekDay} is not available to this post`)
+    throw new Error(`${data.weekDay} is not available`)
   }
 
   const isRequested = await UserPostRequest.findOne({
@@ -233,8 +238,26 @@ export const createPostRequestByUser = async ({ postId, data, user }) => {
  * @param {'approved | 'pending' | 'rejected' | 'canceled'} data.status
  */
 
-export const updateRequestStatusBySeller = async ({ requestId, data }) => {
+export const updateRequestStatusByUser = async ({ requestId, data, user }) => {
   const postRequest = await UserPostRequest.findOne({ _id: requestId })
+
+  if (!postRequest) {
+    throw new Error('Post request not found')
+  }
+
+  if (
+    user.rol === 'customer' &&
+    user._id.toString() !== postRequest.customerId.toString()
+  ) {
+    throw new Error('You dont have permission')
+  }
+
+  if (user.rol === 'seller') {
+    const post = await Post.find({ _id: postRequest.postId })
+    if (post.sellerId.toString() !== user._id) {
+      throw new Error('You arent the author of the request')
+    }
+  }
 
   if (data.status) {
     if (data.status === 'approved') {
@@ -263,4 +286,16 @@ export const updateRequestStatusBySeller = async ({ requestId, data }) => {
   await postRequest.save()
 
   return postRequest
+}
+
+export const getRequestByUser = async (user) => {
+  if (user.rol === 'customer') {
+    return UserPostRequest.find({ customerId: user._id })
+  }
+
+  const sellerPosts = await Post.find({ sellerId: user._id })
+
+  const postsIds = sellerPosts.map((post) => post._id)
+
+  return UserPostRequest.find({ postId: { $in: postsIds } })
 }

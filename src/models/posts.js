@@ -20,7 +20,7 @@ const PostSchema = new mongoose.Schema(
       require: true,
     },
     plateNumber: {
-      type: Number,
+      type: String,
       require: true,
     },
     km: {
