@@ -16,8 +16,9 @@ export const getPosts = async (filters) => {
     if (filters.vehicle) {
       if (!validPostVehicle.includes(filters.vehicle)) {
         throw new Error(`The type of vehicle must be ${validPostVehicle}`)
+      } else {
+        filtersData.vehicle = filters.vehicle
       }
-      filtersData.vehicle = filters.vehicle
     }
 
     if (filters.name) {
@@ -36,16 +37,31 @@ export const getPosts = async (filters) => {
       filtersData.carSeats = filters.carSeats
     }
 
+    const validFuel = ['gas', 'electric']
     if (filters.fuel) {
-      filtersData.fuel = filters.fuel
+      if (!validFuel.includes(filters.fuel)) {
+        throw new Error('This fuel type is not valid')
+      } else {
+        filtersData.fuel = filters.fuel
+      }
     }
 
+    const validGearBox = ['manual', 'automatic']
     if (filters.gearBox) {
-      filtersData.gearBox = filters.gearBox
+      if (!validGearBox.includes(filters.gearBox)) {
+        throw new Error('This gearbox type is invalid')
+      } else {
+        filtersData.gearBox = filters.gearBox
+      }
     }
 
+    const validDoors = ['3', '5']
     if (filters.doors) {
-      filtersData.doors = filters.doors
+      if (!validDoors.includes(filters.doors)) {
+        throw new Error('The number of doors is not valid')
+      } else {
+        filtersData.doors = filters.doors
+      }
     }
 
     if (filters.time) {

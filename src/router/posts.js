@@ -137,7 +137,7 @@ router.post('/:postId/request', async (request, response) => {
   }
 })
 
-router.put('/:postId/request/:requestId', async (request, response) => {
+router.put('/request/:requestId', async (request, response) => {
   try {
     await updateRequestStatusByUser({
       requestId: request.params.requestId,
