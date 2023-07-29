@@ -34,7 +34,7 @@ export const login = async ({ email, password }) => {
  * @param {number} phone
  * @param {string} firstName
  * @param {string} lastName
- * @param {string} dateOfBirth
+ * @param {number} age
  * @param {string} dni
  * @param {'seller' | 'customer'} rol
  * @return {Promise<string>}
@@ -46,7 +46,7 @@ export const signup = async ({
   phone,
   firstName,
   lastName,
-  dateOfBirth,
+  age,
   dni,
   rol,
 }) => {
@@ -72,8 +72,8 @@ export const signup = async ({
     throw new Error('Last name must be 3 characters or longer')
   }
 
-  if (dateOfBirth && !isValid(dateOfBirth)) {
-    throw new Error('Your birthdate is invalid')
+  if (age && typeof age !== 'number') {
+    throw new Error('Your age must be a number')
   }
 
   if (dni && typeof dni !== 'string') {
@@ -96,7 +96,7 @@ export const signup = async ({
     phone,
     firstName,
     lastName,
-    dateOfBirth,
+    age,
     dni,
     rol,
   })
