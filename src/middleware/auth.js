@@ -18,13 +18,13 @@ export const ensureAuthenticated = async (request, response, next) => {
     const payload = jwt.decode(token, process.env.TOKEN_SECRET)
 
     if (!payload || !payload.id) {
-      return response.status(403).send({ message: 'Wrong token' })
+      return response.status(403).send({ message: 'Wrong token1' })
     }
 
     const user = await User.findOne({ _id: payload.id })
 
     if (!user) {
-      return response.status(403).send({ message: 'Wrong token' })
+      return response.status(403).send({ message: 'Wrong token2' })
     }
 
     if (user.rol !== 'admin' && adminUrls.includes(request.originalUrl)) {
